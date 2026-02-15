@@ -72,7 +72,63 @@
 <!-- Sections below are added by subsequent skills -->
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+**Designed:** 2026-02-15
+
+### Seitenstruktur
+
+```
+/collaborations - Kooperationsverwaltung
+├── Übersichtsseite (FilterBar + Tabelle mit Quick-Status-Change)
+└── /collaborations/[id] - Detailansicht
+    ├── Info-Karte (Unternehmen, Influencer, Status, Deadline, Notizen)
+    ├── Bearbeiten/Löschen-Buttons (nur Manager)
+    └── Briefing-Sektion (Platzhalter für PROJ-4)
+```
+
+### Komponenten
+
+```
+├── CollaborationList (FilterBar + CollaborationsTable)
+├── CollaborationForm (Dialog: Titel, Unternehmen, Influencer, Status, Deadline, Notizen)
+├── CollaborationDetail (Header + InfoCard + Aktionen)
+├── StatusBadge (farbcodiert: Grau/Blau/Orange/Grün/Rot)
+└── DeleteCollaborationDialog (Warnung bei Briefing)
+```
+
+### Datenmodell
+
+**Collaborations:** ID, Organization-ID, Titel, Company-ID (FK), Influencer-ID (FK, optional), Status (Enum), Deadline, Notizen, Timestamps
+
+- Status-Enum: requested, confirmed, in_progress, completed, declined
+- 1 Kooperation → 1 Unternehmen (Pflicht)
+- 1 Kooperation → 0-1 Influencer (optional)
+- 1 Kooperation → 0-1 Briefing (PROJ-4, Cascade Delete)
+
+### Sicherheit
+
+- RLS: Manager sehen alle Kooperationen ihrer Organisation
+- RLS: Influencer sehen nur assigned_influencer_id = auth.uid()
+- Agency Admin: Vollzugriff (CRUD + Status-Change)
+- Influencer: Nur Lesezugriff
+
+### UI/UX
+
+| Status | Farbe |
+|---|---|
+| Angefragt | Grau |
+| Bestätigt | Blau |
+| In Arbeit | Orange |
+| Abgeschlossen | Grün |
+| Abgelehnt | Rot |
+
+- Überfällige Deadlines: Rot markiert
+- Quick-Status-Change direkt in Tabelle
+- Filter: Status, Influencer, Unternehmen, Datum
+
+### Abhängigkeiten
+
+- **date-fns** - Datum-Formatierung & Berechnungen (neu)
+- Bestehend: shadcn/ui, react-hook-form, zod, Supabase
 
 ## QA Test Results
 _To be added by /qa_
