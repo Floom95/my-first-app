@@ -12,7 +12,7 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| PROJ-1 | Benutzer-Authentifizierung & Rollenverwaltung | Planned | [PROJ-1-benutzer-authentifizierung-rollenverwaltung.md](PROJ-1-benutzer-authentifizierung-rollenverwaltung.md) | 2026-02-15 |
+| PROJ-1 | Benutzer-Authentifizierung & Rollenverwaltung | In Progress | [PROJ-1-benutzer-authentifizierung-rollenverwaltung.md](PROJ-1-benutzer-authentifizierung-rollenverwaltung.md) | 2026-02-15 |
 | PROJ-2 | Unternehmen & Ansprechpartner verwalten | Planned | [PROJ-2-unternehmen-ansprechpartner-verwalten.md](PROJ-2-unternehmen-ansprechpartner-verwalten.md) | 2026-02-15 |
 | PROJ-3 | Kooperationen verwalten | Planned | [PROJ-3-kooperationen-verwalten.md](PROJ-3-kooperationen-verwalten.md) | 2026-02-15 |
 | PROJ-4 | Briefing-System | Planned | [PROJ-4-briefing-system.md](PROJ-4-briefing-system.md) | 2026-02-15 |
