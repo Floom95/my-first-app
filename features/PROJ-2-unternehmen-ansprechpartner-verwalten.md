@@ -58,7 +58,63 @@
 <!-- Sections below are added by subsequent skills -->
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+**Designed:** 2026-02-15
+
+### Seitenstruktur
+
+```
+/companies - Unternehmensverwaltung
+├── Übersichtsseite (Suchleiste, Grid mit Unternehmenskarten)
+└── /companies/[id] - Detailansicht
+    ├── Unternehmens-Header (Name, Branche, Website, Notizen)
+    ├── Bearbeiten/Löschen-Buttons (nur Manager)
+    └── Ansprechpartner-Sektion (Tabelle + Hinzufügen)
+```
+
+### Komponenten
+
+```
+├── CompanyList (Suche, Filter, Grid mit CompanyCards)
+├── CompanyForm (Dialog: Name, Branche, Website, Notizen)
+├── CompanyDetail (Header + Ansprechpartner-Sektion)
+├── ContactForm (Dialog: Name, Position, E-Mail, Telefon)
+├── ContactsTable (Tabelle mit Aktionen)
+└── DeleteConfirmDialog (Warnung bei aktiven Kooperationen)
+```
+
+### Datenmodell
+
+**Companies:** ID, Organization-ID, Name, Branche, Website, Notizen, Timestamps
+**Contacts:** ID, Company-ID, Name, Position, E-Mail, Telefon, Timestamps
+
+- 1 Unternehmen → n Ansprechpartner
+- Cascade Delete: Ansprechpartner werden bei Unternehmenslöschung mitgelöscht
+
+### Sicherheit
+
+- RLS auf organization_id (Multi-Tenancy)
+- Agency Admin: Vollzugriff (CRUD)
+- Influencer: Nur Lesezugriff
+- Validierung: E-Mail RFC 5322, Website gültige URL
+
+### Performance
+
+- Pagination (initial 50 Einträge)
+- Suche mit Debounce
+- Optimistic Updates
+
+### Tech-Entscheidungen
+
+| Entscheidung | Warum |
+|---|---|
+| Eigene /companies Route | Unternehmen = eigenständige Entität |
+| Ansprechpartner in Detailansicht | 1:n Beziehung logisch gruppiert |
+| Modal/Dialog für Formulare | Schnelles CRUD ohne Seitenwechsel |
+| Duplikat-Warnung (nicht blockierend) | Flexibilität für echte Duplikate |
+
+### Abhängigkeiten
+
+Keine neuen - shadcn/ui, react-hook-form, zod, Supabase bereits vorhanden
 
 ## QA Test Results
 _To be added by /qa_
