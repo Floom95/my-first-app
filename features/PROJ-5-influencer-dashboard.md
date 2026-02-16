@@ -66,7 +66,60 @@
 <!-- Sections below are added by subsequent skills -->
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+**Designed:** 2026-02-16
+
+### Seitenstruktur
+
+```
+Dashboard (rollenbasiert)
+├── Agency Admin → Bestehende Admin-Übersicht (Stats + letzte Aktivitäten)
+└── Influencer → Influencer-Dashboard
+    ├── Überfällige Kooperationen (rote Warnung, Deadline abgelaufen)
+    ├── Anstehende Kooperationen (Deadline in den nächsten 7 Tagen)
+    └── Alle meine Kooperationen (Karten-Grid mit Status-Filter)
+        └── Klick → /cooperations/[id] (Detailansicht mit Briefing, Read-Only)
+```
+
+### Komponenten
+
+```
+├── InfluencerDashboard (Wrapper: 3 Sektionen + Filter)
+├── CollaborationCard (Karte: Titel, Unternehmen, Status, Deadline-Countdown)
+└── Bestehend wiederverwendet:
+    ├── StatusBadge (farbcodiert)
+    ├── BriefingDisplay (Read-Only Anzeige)
+    └── BriefingPdfExport (PDF-Download)
+```
+
+### Datenmodell
+
+Kein neues Datenmodell nötig. Nutzt bestehende Tabellen:
+- **collaborations** (gefiltert über RLS: assigned_influencer_id = auth.uid())
+- **companies** (Join für Unternehmensname)
+- **briefings** (Join für Posting-Zeitraum auf Karten)
+
+### Sicherheit
+
+- Bestehende RLS-Policies reichen aus (Influencer sehen nur zugewiesene Kooperationen)
+- Keine neuen API-Endpunkte nötig
+- Dashboard-Komponente ist rein Client-seitig (nutzt bestehende Supabase-Queries)
+- Keine Edit/Delete-Buttons für Influencer (rollenbasiert ausgeblendet)
+
+### UI/UX
+
+| Sektion | Bedingung | Anzeige |
+|---|---|---|
+| Überfällig | deadline < heute AND status != completed/declined | Rote Badge + Warnung |
+| Anstehend | deadline zwischen heute und +7 Tage | Gelbe/Orange Hervorhebung |
+| Alle | Alle zugewiesenen Kooperationen | Status-Filter (Tabs) |
+
+- Card-basiertes Layout (responsive: 3 Spalten Desktop, 1 Spalte Mobile)
+- Deadline-Countdown mit date-fns (z.B. "In 3 Tagen", "Vor 2 Tagen")
+- Empty State: Freundliche Nachricht wenn keine Kooperationen zugewiesen
+
+### Abhängigkeiten
+
+Keine neuen - nutzt bestehende: date-fns, shadcn/ui, Supabase, StatusBadge
 
 ## QA Test Results
 _To be added by /qa_

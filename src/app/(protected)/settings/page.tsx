@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, FileText, ChevronRight } from "lucide-react";
+import { Loader2, FileText, ChevronRight, Users } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
 import { createClient } from "@/lib/supabase";
@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { InviteUserForm } from "@/components/auth/invite-user-form";
 import {
   Form,
   FormControl,
@@ -136,10 +137,28 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Briefing Templates (admin only) */}
+      {/* Admin sections */}
       {isAdmin && (
         <>
           <Separator />
+
+          {/* Team management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Team verwalten
+              </CardTitle>
+              <CardDescription>
+                Laden Sie Influencer oder Unternehmen in Ihre Organisation ein.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <InviteUserForm />
+            </CardContent>
+          </Card>
+
+          {/* Briefing Templates */}
           <Card>
             <CardHeader>
               <CardTitle>Briefing-Templates</CardTitle>

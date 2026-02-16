@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -24,6 +25,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const urlError = searchParams.get("error");
+    if (urlError === "auth_callback_error") {
+      setError(
+        "Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut oder fordern Sie einen neuen Link an."
+      );
+    }
+  }, [searchParams]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),

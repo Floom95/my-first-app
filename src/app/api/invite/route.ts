@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase-server";
 import { createAdminClient } from "@/lib/supabase-admin";
+
+const inviteBodySchema = z.object({
+  email: z.string().email("Ungueltige E-Mail-Adresse"),
+  full_name: z.string().min(1, "Name ist erforderlich"),
+  role: z.enum(["influencer", "brand"], "Ungueltige Rolle. Erlaubt: influencer, brand"),
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,27 +41,32 @@ export async function POST(request: NextRequest) {
 
     if (profile.role !== "agency_admin") {
       return NextResponse.json(
-        { error: "Nur Agency Admins können Nutzer einladen" },
+        { error: "Nur Agency Admins koennen Nutzer einladen" },
         { status: 403 }
       );
     }
 
-    // Parse request body
-    const { email, full_name, role } = await request.json();
-
-    if (!email || !full_name || !role) {
+    // Parse and validate request body with Zod
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
       return NextResponse.json(
-        { error: "E-Mail, Name und Rolle sind Pflichtfelder" },
+        { error: "Ungueltiger Request-Body" },
         { status: 400 }
       );
     }
 
-    if (!["influencer", "brand"].includes(role)) {
+    const parseResult = inviteBodySchema.safeParse(body);
+    if (!parseResult.success) {
+      const firstError = parseResult.error.issues[0]?.message ?? "Validierungsfehler";
       return NextResponse.json(
-        { error: "Ungültige Rolle. Erlaubt: influencer, brand" },
+        { error: firstError },
         { status: 400 }
       );
     }
+
+    const { email, full_name, role } = parseResult.data;
 
     // Invite user via Supabase Admin
     const adminClient = createAdminClient();
