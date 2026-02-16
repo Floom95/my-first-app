@@ -68,26 +68,21 @@ export function useInfluencerDashboard() {
     fetchCollaborations();
   }, [fetchCollaborations]);
 
-  const now = new Date();
-  const sevenDaysFromNow = new Date(
-    now.getTime() + 7 * 24 * 60 * 60 * 1000
-  );
+  const { overdue, upcoming } = useMemo(() => {
+    const now = new Date();
+    const sevenDaysFromNow = new Date(
+      now.getTime() + 7 * 24 * 60 * 60 * 1000
+    );
 
-  const overdue = useMemo(
-    () =>
-      state.collaborations.filter(
+    return {
+      overdue: state.collaborations.filter(
         (c) =>
           c.deadline &&
           new Date(c.deadline) < now &&
           c.status !== "completed" &&
           c.status !== "declined"
       ),
-    [state.collaborations, now]
-  );
-
-  const upcoming = useMemo(
-    () =>
-      state.collaborations.filter(
+      upcoming: state.collaborations.filter(
         (c) =>
           c.deadline &&
           new Date(c.deadline) >= now &&
@@ -95,8 +90,8 @@ export function useInfluencerDashboard() {
           c.status !== "completed" &&
           c.status !== "declined"
       ),
-    [state.collaborations, now, sevenDaysFromNow]
-  );
+    };
+  }, [state.collaborations]);
 
   const filtered = useMemo(
     () =>

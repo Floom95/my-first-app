@@ -384,7 +384,7 @@ export default function CooperationDetailPage() {
             <p className="mt-1 text-sm text-muted-foreground max-w-sm">
               {isAdmin
                 ? "Erstellen Sie ein Briefing mit allen wichtigen Informationen fuer den Influencer."
-                : "Es wurde noch kein Briefing fuer diese Kooperation erstellt."}
+                : "Briefing wird gerade erstellt. Bitte wende dich an deinen Manager."}
             </p>
             {isAdmin && (
               <Button
@@ -416,7 +416,7 @@ export default function CooperationDetailPage() {
             onOpenChange={setShowDeleteDialog}
             onConfirm={handleDelete}
             title="Kooperation loeschen"
-            description={`Moechten Sie "${collaboration.title}" wirklich loeschen? Zugehoerige Briefings werden ebenfalls geloescht. Diese Aktion kann nicht rueckgaengig gemacht werden.`}
+            description={`Moechten Sie "${collaboration.title}" wirklich loeschen?${briefing ? " Das zugehoerige Briefing wird ebenfalls geloescht." : ""} Diese Aktion kann nicht rueckgaengig gemacht werden.`}
           />
 
           <BriefingForm

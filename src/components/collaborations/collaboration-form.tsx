@@ -92,7 +92,10 @@ export function CollaborationForm({
         deadline: values.deadline
           ? new Date(values.deadline).toISOString()
           : undefined,
-        assigned_influencer_id: values.assigned_influencer_id || undefined,
+        assigned_influencer_id:
+          values.assigned_influencer_id && values.assigned_influencer_id !== "none"
+            ? values.assigned_influencer_id
+            : undefined,
         notes: values.notes || undefined,
       };
       await onSubmit(submitValues);
