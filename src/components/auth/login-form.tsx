@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export function LoginForm() {
+function LoginFormInner() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -156,5 +156,13 @@ export function LoginForm() {
         </div>
       </form>
     </Form>
+  );
+}
+
+export function LoginForm() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center p-8">Laden...</div>}>
+      <LoginFormInner />
+    </Suspense>
   );
 }
