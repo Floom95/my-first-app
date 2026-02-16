@@ -75,7 +75,51 @@
 <!-- Sections below are added by subsequent skills -->
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+**Designed:** 2026-02-16
+
+### Seitenstruktur
+
+```
+Briefing-System (integriert in Kooperations-Detailansicht)
+├── /cooperations/[id] - Briefing-Sektion
+│   ├── Briefing anzeigen (Read-Only für Influencer)
+│   ├── Briefing erstellen/bearbeiten (Dialog für Manager)
+│   ├── PDF-Export-Button
+│   └── Template-Auswahl beim Erstellen
+│
+└── /settings/templates - Briefing-Templates (nur Manager)
+    ├── Template-Liste
+    ├── Template erstellen/bearbeiten (Dialog)
+    └── Template löschen
+```
+
+### Komponenten
+
+```
+├── BriefingDisplay (strukturierte Anzeige aller Briefing-Felder)
+├── BriefingForm (Dialog: alle Felder in Sections + Template-Auswahl)
+├── BriefingPdfExport (PDF-Generierung mit jsPDF)
+├── TemplateList (Liste mit CRUD-Aktionen)
+└── TemplateForm (Dialog: Name + alle Briefing-Felder als Vorlage)
+```
+
+### Datenmodell
+
+**Briefings:** ID, Collaboration-ID (FK, unique 1:1), Kampagnenziel, Zielgruppe, Deliverables, Hashtags, Do's/Don'ts, Content-Richtlinien, Posting-Zeitraum (Start/End), Vergütung, Notizen, Timestamps
+
+**Briefing Templates:** ID, Organization-ID, Name, Template-Daten (JSON mit allen Briefing-Feldern), Timestamps
+
+### Sicherheit
+
+- RLS: Briefings über Kooperations-RLS geschützt (Influencer sehen nur zugewiesene)
+- Agency Admin: Erstellen, Bearbeiten, Löschen
+- Influencer: Nur Lesen + PDF-Export
+- Templates: Nur organisationsspezifisch
+
+### Abhängigkeiten
+
+- **jspdf** - PDF-Generierung im Browser (neu)
+- Bestehend: shadcn/ui, react-hook-form, zod, date-fns, Supabase
 
 ## QA Test Results
 _To be added by /qa_

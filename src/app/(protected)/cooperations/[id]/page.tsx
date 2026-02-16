@@ -14,6 +14,7 @@ import {
   Trash2,
   AlertCircle,
   FileText,
+  Plus,
 } from "lucide-react";
 import { format, isPast, parseISO } from "date-fns";
 import { de } from "date-fns/locale";
@@ -24,7 +25,9 @@ import {
   useCollaborationOptions,
 } from "@/hooks/use-collaborations";
 import { useCollaborations } from "@/hooks/use-collaborations";
-import type { CollaborationFormValues } from "@/lib/types";
+import { useBriefing } from "@/hooks/use-briefings";
+import { useBriefingTemplates } from "@/hooks/use-briefing-templates";
+import type { CollaborationFormValues, BriefingFormValues } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +41,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/collaborations/status-badge";
 import { CollaborationForm } from "@/components/collaborations/collaboration-form";
 import { DeleteConfirmDialog } from "@/components/companies/delete-confirm-dialog";
+import { BriefingDisplay } from "@/components/briefings/briefing-display";
+import { BriefingForm } from "@/components/briefings/briefing-form";
+import { BriefingPdfExport } from "@/components/briefings/briefing-pdf-export";
 
 export default function CooperationDetailPage() {
   const params = useParams();
@@ -50,8 +56,21 @@ export default function CooperationDetailPage() {
   const { updateCollaboration, deleteCollaboration } = useCollaborations();
   const { companies, influencers } = useCollaborationOptions();
 
+  // Briefing state
+  const {
+    briefing,
+    loading: briefingLoading,
+    createBriefing,
+    updateBriefing,
+    deleteBriefing,
+  } = useBriefing(collaborationId);
+  const { templates } = useBriefingTemplates();
+
   const [showEditForm, setShowEditForm] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showBriefingForm, setShowBriefingForm] = useState(false);
+  const [showDeleteBriefingDialog, setShowDeleteBriefingDialog] =
+    useState(false);
 
   async function handleUpdate(values: CollaborationFormValues) {
     const result = await updateCollaboration(collaborationId, values);
@@ -64,6 +83,20 @@ export default function CooperationDetailPage() {
   async function handleDelete() {
     await deleteCollaboration(collaborationId);
     router.push("/cooperations");
+  }
+
+  async function handleBriefingSubmit(values: BriefingFormValues) {
+    if (briefing) {
+      return updateBriefing(briefing.id, values);
+    } else {
+      return createBriefing(values);
+    }
+  }
+
+  async function handleDeleteBriefing() {
+    if (briefing) {
+      await deleteBriefing(briefing.id);
+    }
   }
 
   if (loading) {
@@ -283,28 +316,87 @@ export default function CooperationDetailPage() {
 
       <Separator />
 
-      {/* Briefing section (placeholder for PROJ-4) */}
+      {/* Briefing section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold">Briefing</h2>
-            <p className="text-sm text-muted-foreground">
-              Noch kein Briefing vorhanden
+            {briefing ? (
+              <p className="text-sm text-muted-foreground">
+                Detaillierte Briefing-Informationen fuer diese Kooperation
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Noch kein Briefing vorhanden
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {briefing && (
+              <BriefingPdfExport
+                briefing={briefing}
+                collaboration={collaboration}
+              />
+            )}
+            {isAdmin && briefing && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowBriefingForm(true)}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Briefing bearbeiten
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDeleteBriefingDialog(true)}
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Loeschen
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {briefingLoading ? (
+          <Card>
+            <CardContent className="p-6 space-y-4">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-64" />
+              <Skeleton className="h-4 w-48" />
+              <Skeleton className="h-4 w-56" />
+            </CardContent>
+          </Card>
+        ) : briefing ? (
+          <BriefingDisplay briefing={briefing} />
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <FileText className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h3 className="mt-4 text-sm font-semibold">
+              Kein Briefing vorhanden
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground max-w-sm">
+              {isAdmin
+                ? "Erstellen Sie ein Briefing mit allen wichtigen Informationen fuer den Influencer."
+                : "Es wurde noch kein Briefing fuer diese Kooperation erstellt."}
             </p>
+            {isAdmin && (
+              <Button
+                className="mt-4"
+                onClick={() => setShowBriefingForm(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Briefing erstellen
+              </Button>
+            )}
           </div>
-        </div>
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-            <FileText className="h-6 w-6 text-muted-foreground" />
-          </div>
-          <h3 className="mt-4 text-sm font-semibold">
-            Briefing kommt bald
-          </h3>
-          <p className="mt-1 text-sm text-muted-foreground max-w-sm">
-            Die Briefing-Funktion wird in einem zukuenftigen Update
-            hinzugefuegt (PROJ-4).
-          </p>
-        </div>
+        )}
       </div>
 
       {/* Edit/Delete dialogs */}
@@ -325,6 +417,22 @@ export default function CooperationDetailPage() {
             onConfirm={handleDelete}
             title="Kooperation loeschen"
             description={`Moechten Sie "${collaboration.title}" wirklich loeschen? Zugehoerige Briefings werden ebenfalls geloescht. Diese Aktion kann nicht rueckgaengig gemacht werden.`}
+          />
+
+          <BriefingForm
+            open={showBriefingForm}
+            onOpenChange={setShowBriefingForm}
+            onSubmit={handleBriefingSubmit}
+            briefing={briefing}
+            templates={templates}
+          />
+
+          <DeleteConfirmDialog
+            open={showDeleteBriefingDialog}
+            onOpenChange={setShowDeleteBriefingDialog}
+            onConfirm={handleDeleteBriefing}
+            title="Briefing loeschen"
+            description="Moechten Sie dieses Briefing wirklich loeschen? Diese Aktion kann nicht rueckgaengig gemacht werden."
           />
         </>
       )}

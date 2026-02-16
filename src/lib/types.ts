@@ -156,3 +156,91 @@ export const collaborationFormSchema = z.object({
 });
 
 export type CollaborationFormValues = z.infer<typeof collaborationFormSchema>;
+
+// --- PROJ-4: Briefing Types ---
+
+export interface Briefing {
+  id: string;
+  collaboration_id: string;
+  campaign_goal: string;
+  target_audience: string | null;
+  deliverables: string | null;
+  hashtags: string | null;
+  dos_donts: string | null;
+  content_guidelines: string | null;
+  posting_period_start: string | null;
+  posting_period_end: string | null;
+  compensation: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BriefingTemplateData {
+  campaign_goal?: string;
+  target_audience?: string;
+  deliverables?: string;
+  hashtags?: string;
+  dos_donts?: string;
+  content_guidelines?: string;
+  compensation?: string;
+  notes?: string;
+}
+
+export interface BriefingTemplate {
+  id: string;
+  organization_id: string;
+  name: string;
+  template_data: BriefingTemplateData;
+  created_at: string;
+  updated_at: string;
+}
+
+export const briefingFormSchema = z
+  .object({
+    campaign_goal: z
+      .string()
+      .min(1, "Kampagnenziel ist ein Pflichtfeld"),
+    target_audience: z.string().optional(),
+    deliverables: z.string().optional(),
+    hashtags: z.string().optional(),
+    dos_donts: z.string().optional(),
+    content_guidelines: z.string().optional(),
+    posting_period_start: z.string().optional(),
+    posting_period_end: z.string().optional(),
+    compensation: z.string().optional(),
+    notes: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.posting_period_start && data.posting_period_end) {
+        return (
+          new Date(data.posting_period_end) >=
+          new Date(data.posting_period_start)
+        );
+      }
+      return true;
+    },
+    {
+      message: "Enddatum muss nach dem Startdatum liegen",
+      path: ["posting_period_end"],
+    }
+  );
+
+export type BriefingFormValues = z.infer<typeof briefingFormSchema>;
+
+export const briefingTemplateFormSchema = z.object({
+  name: z.string().min(1, "Name ist ein Pflichtfeld"),
+  campaign_goal: z.string().optional(),
+  target_audience: z.string().optional(),
+  deliverables: z.string().optional(),
+  hashtags: z.string().optional(),
+  dos_donts: z.string().optional(),
+  content_guidelines: z.string().optional(),
+  compensation: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export type BriefingTemplateFormValues = z.infer<
+  typeof briefingTemplateFormSchema
+>;

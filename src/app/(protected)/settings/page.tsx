@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, FileText, ChevronRight } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
 import { createClient } from "@/lib/supabase";
@@ -36,7 +37,7 @@ import {
 } from "@/components/ui/form";
 
 export default function SettingsPage() {
-  const { user, profile } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -134,6 +135,31 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Briefing Templates (admin only) */}
+      {isAdmin && (
+        <>
+          <Separator />
+          <Card>
+            <CardHeader>
+              <CardTitle>Briefing-Templates</CardTitle>
+              <CardDescription>
+                Verwalten Sie wiederverwendbare Briefing-Vorlagen fuer Ihre
+                Kooperationen.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/settings/templates">
+                <Button variant="outline" className="gap-2">
+                  <FileText className="h-4 w-4" />
+                  Templates verwalten
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </>
+      )}
 
       <Separator />
 

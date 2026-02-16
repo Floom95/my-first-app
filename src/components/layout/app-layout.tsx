@@ -56,9 +56,10 @@ const navItems: NavItem[] = [
     icon: Handshake,
   },
   {
-    label: "Briefings",
-    href: "/briefings",
+    label: "Briefing-Templates",
+    href: "/settings/templates",
     icon: FileText,
+    adminOnly: true,
   },
 ];
 
@@ -87,7 +88,8 @@ export function AppLayout({ children }: AppLayoutProps) {
     return (
       <nav className="flex flex-col gap-1">
         {filteredNavItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;
           return (
             <Link
