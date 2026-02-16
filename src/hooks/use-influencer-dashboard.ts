@@ -41,7 +41,7 @@ export function useInfluencerDashboard() {
       const { data, error } = await supabase
         .from("collaborations")
         .select(
-          "*, company:companies(id, name), assigned_influencer:user_profiles!collaborations_assigned_influencer_id_fkey(id, user_id, full_name)"
+          "*, company:companies(id, name), assigned_influencer:user_profiles!collaborations_assigned_influencer_id_fkey(id, user_id, full_name), briefing:briefings(posting_period_start, posting_period_end)"
         )
         .order("deadline", { ascending: true, nullsFirst: false });
 

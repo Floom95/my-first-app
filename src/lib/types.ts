@@ -144,6 +144,7 @@ export interface Collaboration {
 export interface CollaborationWithRelations extends Collaboration {
   company: Pick<Company, "id" | "name"> | null;
   assigned_influencer: Pick<UserProfile, "id" | "user_id" | "full_name"> | null;
+  briefing?: Pick<Briefing, "posting_period_start" | "posting_period_end"> | null;
 }
 
 export const collaborationFormSchema = z.object({

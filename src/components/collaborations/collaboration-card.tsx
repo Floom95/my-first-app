@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, Building2, AlertCircle, Clock } from "lucide-react";
+import { Calendar, Building2, AlertCircle, Clock, CalendarRange } from "lucide-react";
 import { formatDistanceToNow, isPast, parseISO, format } from "date-fns";
 import { de } from "date-fns/locale";
 
@@ -88,6 +88,18 @@ export function CollaborationCard({
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-3.5 w-3.5 shrink-0" />
               <span className="italic">Keine Deadline</span>
+            </div>
+          )}
+
+          {/* Posting period */}
+          {collaboration.briefing?.posting_period_start && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CalendarRange className="h-3.5 w-3.5 shrink-0" />
+              <span>
+                {format(parseISO(collaboration.briefing.posting_period_start), "dd. MMM", { locale: de })}
+                {collaboration.briefing.posting_period_end &&
+                  ` - ${format(parseISO(collaboration.briefing.posting_period_end), "dd. MMM yyyy", { locale: de })}`}
+              </span>
             </div>
           )}
         </CardContent>
