@@ -1,6 +1,6 @@
 # PROJ-1: Benutzer-Authentifizierung & Rollenverwaltung
 
-## Status: Planned
+## Status: In Progress
 **Created:** 2026-02-15
 **Last Updated:** 2026-02-15
 

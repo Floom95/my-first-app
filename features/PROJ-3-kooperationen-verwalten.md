@@ -1,6 +1,6 @@
 # PROJ-3: Kooperationen verwalten
 
-## Status: Planned
+## Status: In Progress
 **Created:** 2026-02-15
 **Last Updated:** 2026-02-15
 
